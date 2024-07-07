@@ -1135,9 +1135,11 @@ if (CMAKE_SYSTEM_NAME MATCHES "OS390")
   add_compile_definitions(_UNIX03_THREADS) # Multithreading support.
 endif()
 
-# Build with _FILE_OFFSET_BITS=64 on Solaris to match g++ >= 9.
-if (UNIX AND ${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
-          add_compile_definitions(_FILE_OFFSET_BITS=64)
+# Build with _FILE_OFFSET_BITS=64 on SunOS to match g++ >= 9.
+# Add XOPEN to get more recent system APIs (default is legacy).
+if( CMAKE_SYSTEM_NAME MATCHES "SunOS" )
+  add_compile_definitions(_XOPEN_SOURCE=600)
+  add_compile_definitions(_FILE_OFFSET_BITS=64)
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -1154,10 +1156,12 @@ if(LLVM_TARGET_IS_CROSSCOMPILE_HOST)
 # (this is a variable that CrossCompile sets on recursive invocations)
 endif()
 
-if( ${CMAKE_SYSTEM_NAME} MATCHES SunOS )
-   # special hack for Solaris to handle crazy system sys/regset.h
-   include_directories("${LLVM_MAIN_INCLUDE_DIR}/llvm/Support/Solaris")
-endif( ${CMAKE_SYSTEM_NAME} MATCHES SunOS )
+if( CMAKE_SYSTEM_NAME MATCHES SunOS )
+  # special hack for Solaris to handle crazy system sys/regset.h
+  # Fix in progress for this: illumos.org/issues/16643
+  # So could test for defined(SS) in autoconf and skip if absent.
+  include_directories("${LLVM_MAIN_INCLUDE_DIR}/llvm/Support/Solaris")
+endif()
 
 # Make sure we don't get -rdynamic in every binary. For those that need it,
 # use export_executable_symbols(target).

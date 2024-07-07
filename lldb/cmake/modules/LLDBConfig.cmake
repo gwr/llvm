@@ -179,6 +179,7 @@ else ()
   include_directories(${CMAKE_SOURCE_DIR}/tools/clang/include)
 endif ()
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/../clang/include")
+include_directories("${LLVM_MAIN_INCLUDE_DIR}")
 
 # GCC silently accepts any -Wno-<foo> option, but warns about those options
 # being unrecognized only if the compilation triggers other warnings to be
@@ -289,6 +290,14 @@ if (APPLE)
   find_library(CORE_FOUNDATION_LIBRARY CoreFoundation)
   find_library(SECURITY_LIBRARY Security)
   include_directories(${LIBXML2_INCLUDE_DIR})
+endif()
+
+# XXX Expected this to come in from llvm/CMakeList.txt but it doesn't!
+# Build with _FILE_OFFSET_BITS=64 on Solaris to match g++ >= 9.
+if (CMAKE_SYSTEM_NAME MATCHES "SunOS")
+  add_compile_definitions(_XOPEN_SOURCE=600)
+  add_compile_definitions(_FILE_OFFSET_BITS=64)
+  include_directories("${LLVM_MAIN_INCLUDE_DIR}/llvm/Support/Solaris")
 endif()
 
 if( WIN32 AND NOT CYGWIN )

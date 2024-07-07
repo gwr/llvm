@@ -229,7 +229,9 @@ public:
   Stream &operator<<(uint16_t uval) = delete;
   Stream &operator<<(uint32_t uval) = delete;
   Stream &operator<<(uint64_t uval) = delete;
+#ifndef __sun  // XXX cannot be overloaded... conflict with char
   Stream &operator<<(int8_t sval) = delete;
+#endif
   Stream &operator<<(int16_t sval) = delete;
   Stream &operator<<(int32_t sval) = delete;
   Stream &operator<<(int64_t sval) = delete;

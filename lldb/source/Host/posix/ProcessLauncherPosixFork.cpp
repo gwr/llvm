@@ -17,7 +17,11 @@
 #include "llvm/Support/Errno.h"
 
 #include <climits>
+#ifdef __sun
+#include <libproc.h>
+#else // __sun
 #include <sys/ptrace.h>
+#endif // __sun
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -84,6 +88,28 @@ static void DupDescriptor(int error_fd, const char *file, int fd, int flags) {
 
   ::close(target_fd);
 }
+
+#ifdef __sun
+// No ptrace(2). Use libproc(3lib)
+// Would like to move this into OS specific code...
+// Everything in here except the ptrace() call is OK
+static int sun_ptrace_self(void)
+{
+  struct ps_prochandle *ph;
+  int grab_flags = PGRAB_RETAIN | PGRAB_FORCE;;
+  int grab_err = 0;
+
+  ph = Pgrab(0, grab_flags, &grab_err);
+  if (ph == NULL) {
+    if (grab_err == 0)
+      grab_err = -1;
+    return (grab_err);
+  }
+  (void) Punsetflags(ph, PR_RLC);
+  Pfree(ph);
+  return (0);
+}
+#endif // __sun
 
 namespace {
 struct ForkFileAction {
@@ -193,8 +219,13 @@ struct ForkLaunchInfo {
     }
 
     // Start tracing this child that is about to exec.
+#ifndef __sun
     if (ptrace(PT_TRACE_ME, 0, nullptr, 0) == -1)
       ExitWithError(error_fd, "ptrace");
+#else // __sun
+    if (sun_ptrace_self() != 0)
+      ExitWithError(error_fd, "sun_ptrace_self");
+#endif // __sun
   }
 
   // Execute.  We should never return...

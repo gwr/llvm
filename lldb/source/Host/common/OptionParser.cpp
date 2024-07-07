@@ -21,7 +21,9 @@ void OptionParser::Prepare(std::unique_lock<std::mutex> &lock) {
 #ifdef __GLIBC__
   optind = 0;
 #else
+#ifndef __sun
   optreset = 1;
+#endif
   optind = 1;
 #endif
 }

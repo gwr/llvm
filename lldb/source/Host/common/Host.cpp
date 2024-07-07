@@ -329,7 +329,7 @@ FileSpec Host::GetModuleFileSpecForHostAddress(const void *host_addr) {
   FileSpec module_filespec;
 #if !defined(__ANDROID__)
   Dl_info info;
-  if (::dladdr(host_addr, &info)) {
+  if (::dladdr((void*)host_addr, &info)) {
     if (info.dli_fname) {
       module_filespec.SetFile(info.dli_fname, FileSpec::Style::native);
       FileSystem::Instance().Resolve(module_filespec);

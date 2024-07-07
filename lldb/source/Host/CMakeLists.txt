@@ -132,6 +132,13 @@ else()
       openbsd/Host.cpp
       openbsd/HostInfoOpenBSD.cpp
       )
+
+  elseif (CMAKE_SYSTEM_NAME MATCHES "SunOS")
+    add_host_subdirectory(sunos
+      sunos/Host.cpp
+      sunos/HostInfoSunOS.cpp
+      )
+
   endif()
 endif()
 
@@ -153,6 +160,13 @@ if (LLDB_ENABLE_LZMA)
 endif()
 if (WIN32)
   list(APPEND LLDB_SYSTEM_LIBS psapi)
+endif()
+
+# XXX How to do this correctly?
+if (CMAKE_SYSTEM_NAME MATCHES "SunOS")
+  list(APPEND EXTRA_LIBS "-lpython3.9")
+  list(APPEND EXTRA_LIBS "-lproc")
+  list(APPEND EXTRA_LIBS "-lsocket -lnsl")
 endif()
 
 if (LLDB_ENABLE_LIBEDIT)

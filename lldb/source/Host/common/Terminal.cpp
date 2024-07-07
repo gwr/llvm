@@ -105,6 +105,17 @@ llvm::Error Terminal::SetCanonical(bool enabled) {
 #endif // LLDB_ENABLE_TERMIOS
 }
 
+#ifdef __sun // XXX NO_CFMAKERAW
+void cfmakeraw(struct termios *tio)
+{
+	tio->c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
+	tio->c_oflag &= ~OPOST;
+	tio->c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
+	tio->c_cflag &= ~(CSIZE|PARENB);
+	tio->c_cflag |= CS8;
+}
+#endif
+
 llvm::Error Terminal::SetRaw() {
 #if LLDB_ENABLE_TERMIOS
   llvm::Expected<Data> data = GetData();
