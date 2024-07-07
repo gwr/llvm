@@ -828,7 +828,7 @@ SystemRuntimeMacOSX::GetPendingItemRefsForQueue(lldb::addr_t queue) {
           //   introspection_dispatch_pending_item_info_s items[];
           //   }
 
-          offset_t offset = 0;
+          lldb::offset_t offset = 0;
           uint64_t i = 0;
           uint32_t version = extractor.GetU32(&offset);
           if (version == 1) {
@@ -935,7 +935,7 @@ void SystemRuntimeMacOSX::PopulateQueuesUsingLibBTR(
     DataExtractor extractor(data.GetBytes(), data.GetByteSize(),
                             m_process->GetByteOrder(),
                             m_process->GetAddressByteSize());
-    offset_t offset = 0;
+    lldb::offset_t offset = 0;
     uint64_t queues_read = 0;
 
     // The information about the queues is stored in this format (v1): typedef
@@ -952,7 +952,7 @@ void SystemRuntimeMacOSX::PopulateQueuesUsingLibBTR(
     // } introspection_dispatch_queue_info_s;
 
     while (queues_read < count && offset < queues_buffer_size) {
-      offset_t start_of_this_item = offset;
+      lldb::offset_t start_of_this_item = offset;
 
       uint32_t offset_to_next = extractor.GetU32(&offset);
 
@@ -969,7 +969,7 @@ void SystemRuntimeMacOSX::PopulateQueuesUsingLibBTR(
       if (queue_label == nullptr)
         queue_label = "";
 
-      offset_t start_of_next_item = start_of_this_item + offset_to_next;
+      lldb::offset_t start_of_next_item = start_of_this_item + offset_to_next;
       offset = start_of_next_item;
 
       LLDB_LOGF(log,
@@ -996,7 +996,7 @@ SystemRuntimeMacOSX::ItemInfo SystemRuntimeMacOSX::ExtractItemInfoFromBuffer(
     lldb_private::DataExtractor &extractor) {
   ItemInfo item;
 
-  offset_t offset = 0;
+  lldb::offset_t offset = 0;
 
   item.item_that_enqueued_this = extractor.GetAddress(&offset);
   item.function_or_block = extractor.GetAddress(&offset);

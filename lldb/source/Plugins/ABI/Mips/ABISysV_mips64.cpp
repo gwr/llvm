@@ -970,7 +970,7 @@ ValueObjectSP ABISysV_mips64::GetReturnValueObjectImpl(
 
             DataExtractor *copy_from_extractor = nullptr;
             uint64_t return_value[2];
-            offset_t offset = 0;
+            lldb::offset_t offset = 0;
 
             if (idx == 0) {
               // This case is for long double type.

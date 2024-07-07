@@ -524,7 +524,7 @@ Status AdbClient::SyncService::internalStat(const FileSpec &remote_file,
 
   DataExtractor extractor(&buffer[0], buffer.size(), eByteOrderLittle,
                           sizeof(void *));
-  offset_t offset = 0;
+  lldb::offset_t offset = 0;
 
   const void *command = extractor.GetData(&offset, stat_len);
   if (!command)
@@ -607,7 +607,7 @@ Status AdbClient::SyncService::ReadSyncHeader(std::string &response_id,
   if (error.Success()) {
     response_id.assign(&buffer[0], 4);
     DataExtractor extractor(&buffer[4], 4, eByteOrderLittle, sizeof(void *));
-    offset_t offset = 0;
+    lldb::offset_t offset = 0;
     data_len = extractor.GetU32(&offset);
   }
 

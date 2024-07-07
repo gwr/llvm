@@ -228,7 +228,7 @@ size_t ScriptedProcess::DoReadMemory(lldb::addr_t addr, void *buf, size_t size,
   if (!data_extractor_sp || !data_extractor_sp->GetByteSize() || error.Fail())
     return 0;
 
-  offset_t bytes_copied = data_extractor_sp->CopyByteOrderedData(
+  lldb::offset_t bytes_copied = data_extractor_sp->CopyByteOrderedData(
       0, data_extractor_sp->GetByteSize(), buf, size, GetByteOrder());
 
   if (!bytes_copied || bytes_copied == LLDB_INVALID_OFFSET)

@@ -281,7 +281,7 @@ Status ELFLinuxPrStatus::Parse(const DataExtractor &data,
 
   // Read field by field to correctly account for endianess of both the core
   // dump and the platform running lldb.
-  offset_t offset = 0;
+  lldb::offset_t offset = 0;
   si_signo = data.GetU32(&offset);
   si_code = data.GetU32(&offset);
   si_errno = data.GetU32(&offset);
@@ -349,7 +349,7 @@ Status ELFLinuxPrPsInfo::Parse(const DataExtractor &data,
     return error;
   }
   size_t size = 0;
-  offset_t offset = 0;
+  lldb::offset_t offset = 0;
 
   pr_state = data.GetU8(&offset);
   pr_sname = data.GetU8(&offset);
@@ -417,7 +417,7 @@ Status ELFLinuxSigInfo::Parse(const DataExtractor &data, const ArchSpec &arch) {
 
   // Parsing from a 32 bit ELF core file, and populating/reusing the structure
   // properly, because the struct is for the 64 bit version
-  offset_t offset = 0;
+  lldb::offset_t offset = 0;
   si_signo = data.GetU32(&offset);
   si_errno = data.GetU32(&offset);
   si_code = data.GetU32(&offset);

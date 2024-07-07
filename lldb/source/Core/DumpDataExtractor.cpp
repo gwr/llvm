@@ -119,10 +119,10 @@ static lldb::offset_t DumpAPInt(Stream *s, const DataExtractor &data,
 /// Dumps decoded instructions to a stream.
 static lldb::offset_t DumpInstructions(const DataExtractor &DE, Stream *s,
                                        ExecutionContextScope *exe_scope,
-                                       offset_t start_offset,
+                                       lldb::offset_t start_offset,
                                        uint64_t base_addr,
                                        size_t number_of_instructions) {
-  offset_t offset = start_offset;
+  lldb::offset_t offset = start_offset;
 
   TargetSP target_sp;
   if (exe_scope)
@@ -339,7 +339,7 @@ static const llvm::fltSemantics &GetFloatSemantics(const TargetSP &target_sp,
 }
 
 lldb::offset_t lldb_private::DumpDataExtractor(
-    const DataExtractor &DE, Stream *s, offset_t start_offset,
+    const DataExtractor &DE, Stream *s, lldb::offset_t start_offset,
     lldb::Format item_format, size_t item_byte_size, size_t item_count,
     size_t num_per_line, uint64_t base_addr,
     uint32_t item_bit_size,   // If zero, this is not a bitfield value, if
@@ -355,7 +355,7 @@ lldb::offset_t lldb_private::DumpDataExtractor(
       item_byte_size = s->GetAddressByteSize();
   }
 
-  offset_t offset = start_offset;
+  lldb::offset_t offset = start_offset;
 
   std::optional<MemoryTagMap> memory_tag_map;
   if (show_memory_tags && base_addr != LLDB_INVALID_ADDRESS)

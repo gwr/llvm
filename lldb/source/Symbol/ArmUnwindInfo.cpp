@@ -54,7 +54,7 @@ ArmUnwindInfo::ArmUnwindInfo(ObjectFile &objfile, SectionSP &arm_exidx,
 
   addr_t exidx_base_addr = m_arm_exidx_sp->GetFileAddress();
 
-  offset_t offset = 0;
+  lldb::offset_t offset = 0;
   while (m_arm_exidx_data.ValidOffset(offset)) {
     lldb::addr_t file_addr = exidx_base_addr + offset;
     lldb::addr_t addr = exidx_base_addr + (addr_t)offset +

@@ -5427,14 +5427,14 @@ uint32_t ObjectFileMachO::GetNumThreadContexts() {
   return m_thread_context_offsets.GetSize();
 }
 
-std::vector<std::tuple<offset_t, offset_t>>
+std::vector<std::tuple<lldb::offset_t, lldb::offset_t>>
 ObjectFileMachO::FindLC_NOTEByName(std::string name) {
-  std::vector<std::tuple<offset_t, offset_t>> results;
+  std::vector<std::tuple<lldb::offset_t, lldb::offset_t>> results;
   ModuleSP module_sp(GetModule());
   if (module_sp) {
     std::lock_guard<std::recursive_mutex> guard(module_sp->GetMutex());
 
-    offset_t offset = MachHeaderSizeFromMagic(m_header.magic);
+    lldb::offset_t offset = MachHeaderSizeFromMagic(m_header.magic);
     for (uint32_t i = 0; i < m_header.ncmds; ++i) {
       const uint32_t cmd_offset = offset;
       llvm::MachO::load_command lc = {};
@@ -5447,8 +5447,8 @@ ObjectFileMachO::FindLC_NOTEByName(std::string name) {
         offset += 16;
 
         if (name == data_owner) {
-          offset_t payload_offset = m_data.GetU64_unchecked(&offset);
-          offset_t payload_size = m_data.GetU64_unchecked(&offset);
+          lldb::offset_t payload_offset = m_data.GetU64_unchecked(&offset);
+          lldb::offset_t payload_size = m_data.GetU64_unchecked(&offset);
           results.push_back({payload_offset, payload_size});
         }
       }
@@ -5467,8 +5467,8 @@ std::string ObjectFileMachO::GetIdentifierString() {
 
     auto lc_notes = FindLC_NOTEByName("kern ver str");
     for (auto lc_note : lc_notes) {
-      offset_t payload_offset = std::get<0>(lc_note);
-      offset_t payload_size = std::get<1>(lc_note);
+      lldb::offset_t payload_offset = std::get<0>(lc_note);
+      lldb::offset_t payload_size = std::get<1>(lc_note);
       uint32_t version;
       if (m_data.GetU32(&payload_offset, &version, 1) != nullptr) {
         if (version == 1) {
@@ -5484,7 +5484,7 @@ std::string ObjectFileMachO::GetIdentifierString() {
 
     // Second, make a pass over the load commands looking for an obsolete
     // LC_IDENT load command.
-    offset_t offset = MachHeaderSizeFromMagic(m_header.magic);
+    lldb::offset_t offset = MachHeaderSizeFromMagic(m_header.magic);
     for (uint32_t i = 0; i < m_header.ncmds; ++i) {
       const uint32_t cmd_offset = offset;
       llvm::MachO::ident_command ident_command;
@@ -5513,7 +5513,7 @@ AddressableBits ObjectFileMachO::GetAddressableBits() {
     std::lock_guard<std::recursive_mutex> guard(module_sp->GetMutex());
     auto lc_notes = FindLC_NOTEByName("addrable bits");
     for (auto lc_note : lc_notes) {
-      offset_t payload_offset = std::get<0>(lc_note);
+      lldb::offset_t payload_offset = std::get<0>(lc_note);
       uint32_t version;
       if (m_data.GetU32(&payload_offset, &version, 1) != nullptr) {
         if (version == 3) {
@@ -5558,7 +5558,7 @@ bool ObjectFileMachO::GetCorefileMainBinaryInfo(addr_t &value,
 
     auto lc_notes = FindLC_NOTEByName("main bin spec");
     for (auto lc_note : lc_notes) {
-      offset_t payload_offset = std::get<0>(lc_note);
+      lldb::offset_t payload_offset = std::get<0>(lc_note);
 
       // struct main_bin_spec
       // {
@@ -5661,8 +5661,8 @@ bool ObjectFileMachO::GetCorefileThreadExtraInfos(std::vector<tid_t> &tids) {
     Log *log(GetLog(LLDBLog::Object | LLDBLog::Process | LLDBLog::Thread));
     auto lc_notes = FindLC_NOTEByName("process metadata");
     for (auto lc_note : lc_notes) {
-      offset_t payload_offset = std::get<0>(lc_note);
-      offset_t strsize = std::get<1>(lc_note);
+      lldb::offset_t payload_offset = std::get<0>(lc_note);
+      lldb::offset_t strsize = std::get<1>(lc_note);
       std::string buf(strsize, '\0');
       if (m_data.CopyData(payload_offset, strsize, buf.data()) != strsize) {
         LLDB_LOGF(log,
@@ -6302,8 +6302,8 @@ struct segment_vmaddr {
 // are some multiple passes over the image list while calculating
 // everything.
 
-static offset_t CreateAllImageInfosPayload(
-    const lldb::ProcessSP &process_sp, offset_t initial_file_offset,
+static lldb::offset_t CreateAllImageInfosPayload(
+    const lldb::ProcessSP &process_sp, lldb::offset_t initial_file_offset,
     StreamString &all_image_infos_payload, SaveCoreStyle core_style) {
   Target &target = process_sp->GetTarget();
   ModuleList modules = target.GetImages();
@@ -6381,13 +6381,13 @@ static offset_t CreateAllImageInfosPayload(
     modules_segment_vmaddrs.push_back(segment_vmaddrs);
   }
 
-  offset_t size_of_vmaddr_structs = 0;
+  lldb::offset_t size_of_vmaddr_structs = 0;
   for (size_t i = 0; i < modules_segment_vmaddrs.size(); i++) {
     size_of_vmaddr_structs +=
         modules_segment_vmaddrs[i].size() * sizeof(segment_vmaddr);
   }
 
-  offset_t size_of_filepath_cstrings = 0;
+  lldb::offset_t size_of_filepath_cstrings = 0;
   for (size_t i = 0; i < modules_count; i++) {
     ModuleSP module_sp = modules.GetModuleAtIndex(i);
     size_of_filepath_cstrings += module_sp->GetFileSpec().GetPath().size() + 1;
@@ -6396,20 +6396,20 @@ static offset_t CreateAllImageInfosPayload(
   // Calculate the file offsets of our "all image infos" payload in the
   // corefile. initial_file_offset the original value passed in to this method.
 
-  offset_t start_of_entries =
+  lldb::offset_t start_of_entries =
       initial_file_offset + sizeof(all_image_infos_header);
-  offset_t start_of_seg_vmaddrs =
+  lldb::offset_t start_of_seg_vmaddrs =
       start_of_entries + sizeof(image_entry) * modules_count;
-  offset_t start_of_filenames = start_of_seg_vmaddrs + size_of_vmaddr_structs;
+  lldb::offset_t start_of_filenames = start_of_seg_vmaddrs + size_of_vmaddr_structs;
 
-  offset_t final_file_offset = start_of_filenames + size_of_filepath_cstrings;
+  lldb::offset_t final_file_offset = start_of_filenames + size_of_filepath_cstrings;
 
   // Now write the one-per-module 'struct image_entry' into the
   // StringStream; keep track of where the struct segment_vmaddr
   // entries for each module will end up in the corefile.
 
-  offset_t current_string_offset = start_of_filenames;
-  offset_t current_segaddrs_offset = start_of_seg_vmaddrs;
+  lldb::offset_t current_string_offset = start_of_filenames;
+  lldb::offset_t current_segaddrs_offset = start_of_seg_vmaddrs;
   std::vector<struct image_entry> image_entries;
   for (size_t i = 0; i < modules_count; i++) {
     ModuleSP module_sp = modules.GetModuleAtIndex(i);
@@ -6857,7 +6857,7 @@ ObjectFileMachO::GetCorefileAllImageInfos() {
 
   auto lc_notes = FindLC_NOTEByName("all image infos");
   for (auto lc_note : lc_notes) {
-    offset_t payload_offset = std::get<0>(lc_note);
+    lldb::offset_t payload_offset = std::get<0>(lc_note);
     // Read the struct all_image_infos_header.
     uint32_t version = m_data.GetU32(&payload_offset);
     if (version != 1) {
@@ -6874,12 +6874,12 @@ ObjectFileMachO::GetCorefileAllImageInfos() {
     payload_offset = entries_fileoff;
     for (uint32_t i = 0; i < imgcount; i++) {
       // Read the struct image_entry.
-      offset_t filepath_offset = m_data.GetU64(&payload_offset);
+      lldb::offset_t filepath_offset = m_data.GetU64(&payload_offset);
       uuid_t uuid;
       memcpy(&uuid, m_data.GetData(&payload_offset, sizeof(uuid_t)),
              sizeof(uuid_t));
       uint64_t load_address = m_data.GetU64(&payload_offset);
-      offset_t seg_addrs_offset = m_data.GetU64(&payload_offset);
+      lldb::offset_t seg_addrs_offset = m_data.GetU64(&payload_offset);
       uint32_t segment_count = m_data.GetU32(&payload_offset);
       uint32_t currently_executing = m_data.GetU32(&payload_offset);
 
@@ -6889,7 +6889,7 @@ ObjectFileMachO::GetCorefileAllImageInfos() {
       image_entry.load_address = load_address;
       image_entry.currently_executing = currently_executing;
 
-      offset_t seg_vmaddrs_offset = seg_addrs_offset;
+      lldb::offset_t seg_vmaddrs_offset = seg_addrs_offset;
       for (uint32_t j = 0; j < segment_count; j++) {
         char segname[17];
         m_data.CopyData(seg_vmaddrs_offset, 16, segname);
@@ -6913,7 +6913,7 @@ ObjectFileMachO::GetCorefileAllImageInfos() {
 
   lc_notes = FindLC_NOTEByName("load binary");
   for (auto lc_note : lc_notes) {
-    offset_t payload_offset = std::get<0>(lc_note);
+    lldb::offset_t payload_offset = std::get<0>(lc_note);
     uint32_t version = m_data.GetU32(&payload_offset);
     if (version == 1) {
       uuid_t uuid;

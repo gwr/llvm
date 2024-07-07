@@ -320,7 +320,7 @@ Status ABISysV_riscv::SetReturnValueObject(StackFrameSP &frame_sp,
 
   size_t reg_size = m_is_rv64 ? 8 : 4;
   if (num_bytes <= 2 * reg_size) {
-    offset_t offset = 0;
+    lldb::offset_t offset = 0;
     uint64_t raw_value = data.GetMaxU64(&offset, num_bytes);
 
     auto reg_info =

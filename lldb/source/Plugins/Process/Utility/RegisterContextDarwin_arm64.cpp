@@ -382,7 +382,7 @@ bool RegisterContextDarwin_arm64::ReadRegister(const RegisterInfo *reg_info,
     if (process_sp.get()) {
       DataExtractor regdata(&gpr.x[reg - gpr_w0], 8, process_sp->GetByteOrder(),
                             process_sp->GetAddressByteSize());
-      offset_t offset = 0;
+      lldb::offset_t offset = 0;
       uint64_t retval = regdata.GetMaxU64(&offset, 8);
       uint32_t retval_lower32 = static_cast<uint32_t>(retval & 0xffffffff);
       value.SetUInt32(retval_lower32);
@@ -461,7 +461,7 @@ bool RegisterContextDarwin_arm64::ReadRegister(const RegisterInfo *reg_info,
     if (process_sp.get()) {
       DataExtractor regdata(&fpu.v[reg - fpu_s0], 4, process_sp->GetByteOrder(),
                             process_sp->GetAddressByteSize());
-      offset_t offset = 0;
+      lldb::offset_t offset = 0;
       value.SetFloat(regdata.GetFloat(&offset));
     }
   } break;
@@ -502,7 +502,7 @@ bool RegisterContextDarwin_arm64::ReadRegister(const RegisterInfo *reg_info,
     if (process_sp.get()) {
       DataExtractor regdata(&fpu.v[reg - fpu_d0], 8, process_sp->GetByteOrder(),
                             process_sp->GetAddressByteSize());
-      offset_t offset = 0;
+      lldb::offset_t offset = 0;
       value.SetDouble(regdata.GetDouble(&offset));
     }
   } break;

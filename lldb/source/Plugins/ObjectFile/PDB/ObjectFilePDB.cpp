@@ -93,8 +93,8 @@ bool ObjectFilePDB::initPDBFile() {
 
 ObjectFile *
 ObjectFilePDB::CreateInstance(const ModuleSP &module_sp, DataBufferSP data_sp,
-                              offset_t data_offset, const FileSpec *file,
-                              offset_t file_offset, offset_t length) {
+                              lldb::offset_t data_offset, const FileSpec *file,
+                              lldb::offset_t file_offset, lldb::offset_t length) {
   auto objfile_up = std::make_unique<ObjectFilePDB>(
       module_sp, data_sp, data_offset, file, file_offset, length);
   if (!objfile_up->initPDBFile())
@@ -110,8 +110,8 @@ ObjectFile *ObjectFilePDB::CreateMemoryInstance(const ModuleSP &module_sp,
 }
 
 size_t ObjectFilePDB::GetModuleSpecifications(
-    const FileSpec &file, DataBufferSP &data_sp, offset_t data_offset,
-    offset_t file_offset, offset_t length, ModuleSpecList &specs) {
+    const FileSpec &file, DataBufferSP &data_sp, lldb::offset_t data_offset,
+    lldb::offset_t file_offset, lldb::offset_t length, ModuleSpecList &specs) {
   const size_t initial_count = specs.GetSize();
   ModuleSpec module_spec(file);
   llvm::BumpPtrAllocator allocator;
@@ -159,8 +159,8 @@ size_t ObjectFilePDB::GetModuleSpecifications(
 }
 
 ObjectFilePDB::ObjectFilePDB(const ModuleSP &module_sp, DataBufferSP &data_sp,
-                             offset_t data_offset, const FileSpec *file,
-                             offset_t offset, offset_t length)
+                             lldb::offset_t data_offset, const FileSpec *file,
+                             lldb::offset_t offset, lldb::offset_t length)
     : ObjectFile(module_sp, file, offset, length, data_sp, data_offset) {}
 
 std::unique_ptr<PDBFile>

@@ -11,8 +11,8 @@ using namespace lldb_private;
 using namespace llvm::Win64EH;
 
 template <typename T>
-static const T *TypedRead(const DataExtractor &data_extractor, offset_t &offset,
-                          offset_t size = sizeof(T)) {
+static const T *TypedRead(const DataExtractor &data_extractor, lldb::offset_t &offset,
+                          lldb::offset_t size = sizeof(T)) {
   return static_cast<const T *>(data_extractor.GetData(&offset, size));
 }
 
@@ -53,7 +53,7 @@ private:
   const UnwindInfo *m_unwind_info = nullptr;
 
   DataExtractor m_unwind_code_data;
-  offset_t m_unwind_code_offset;
+  lldb::offset_t m_unwind_code_offset;
   const UnwindCode *m_unwind_code = nullptr;
 
   bool m_chained = false;
@@ -74,7 +74,7 @@ bool UnwindCodesIterator::GetNext() {
       m_unwind_info_data =
           m_object_file.ReadImageDataByRVA(m_unwind_info_rva, UNWIND_INFO_SIZE);
 
-      offset_t offset = 0;
+      lldb::offset_t offset = 0;
       m_unwind_info =
           TypedRead<UnwindInfo>(m_unwind_info_data, offset, UNWIND_INFO_SIZE);
       if (!m_unwind_info) {
@@ -104,7 +104,7 @@ bool UnwindCodesIterator::GetNext() {
     DataExtractor runtime_function_data = m_object_file.ReadImageDataByRVA(
         runtime_function_rva, sizeof(RuntimeFunction));
 
-    offset_t offset = 0;
+    lldb::offset_t offset = 0;
     const auto *runtime_function =
         TypedRead<RuntimeFunction>(runtime_function_data, offset);
     if (!runtime_function) {
@@ -513,7 +513,7 @@ const RuntimeFunction *PECallFrameInfo::FindRuntimeFunctionIntersectsWithRange(
   while (begin < end) {
     uint32_t curr = (begin + end) / 2;
 
-    offset_t offset = curr * sizeof(RuntimeFunction);
+    lldb::offset_t offset = curr * sizeof(RuntimeFunction);
     const auto *runtime_function =
         TypedRead<RuntimeFunction>(m_exception_dir, offset);
     if (!runtime_function)

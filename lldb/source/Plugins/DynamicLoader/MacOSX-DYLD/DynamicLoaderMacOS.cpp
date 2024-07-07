@@ -462,7 +462,7 @@ addr_t DynamicLoaderMacOS::GetNotificationFuncAddrFromImageInfos() {
 
   const uint32_t addr_size =
       m_process->GetTarget().GetArchitecture().GetAddressByteSize();
-  offset_t registered_infos_addr_offset =
+  lldb::offset_t registered_infos_addr_offset =
       sizeof(uint32_t) + // version
       sizeof(uint32_t) + // infoArrayCount
       addr_size +        // infoArray
@@ -492,7 +492,7 @@ addr_t DynamicLoaderMacOS::GetNotificationFuncAddrFromImageInfos() {
   if (registered_infos_addr != all_image_infos_addr)
     return notification_addr;
 
-  offset_t notification_fptr_offset = sizeof(uint32_t) + // version
+  lldb::offset_t notification_fptr_offset = sizeof(uint32_t) + // version
                                       sizeof(uint32_t) + // infoArrayCount
                                       addr_size;         // infoArray
 

@@ -45,8 +45,8 @@ void ObjectFileCOFF::Terminate() {
 
 lldb_private::ObjectFile *
 ObjectFileCOFF::CreateInstance(const ModuleSP &module_sp, DataBufferSP data_sp,
-                               offset_t data_offset, const FileSpec *file,
-                               offset_t file_offset, offset_t length) {
+                               lldb::offset_t data_offset, const FileSpec *file,
+                               lldb::offset_t file_offset, lldb::offset_t length) {
   Log *log = GetLog(LLDBLog::Object);
 
   if (!data_sp) {
@@ -105,8 +105,8 @@ lldb_private::ObjectFile *ObjectFileCOFF::CreateMemoryInstance(
 }
 
 size_t ObjectFileCOFF::GetModuleSpecifications(
-    const FileSpec &file, DataBufferSP &data_sp, offset_t data_offset,
-    offset_t file_offset, offset_t length, ModuleSpecList &specs) {
+    const FileSpec &file, DataBufferSP &data_sp, lldb::offset_t data_offset,
+    lldb::offset_t file_offset, lldb::offset_t length, ModuleSpecList &specs) {
   if (!IsCOFFObjectFile(data_sp))
     return 0;
 

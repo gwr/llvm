@@ -90,8 +90,8 @@ void ObjectFileWasm::Terminate() {
 
 ObjectFile *
 ObjectFileWasm::CreateInstance(const ModuleSP &module_sp, DataBufferSP data_sp,
-                               offset_t data_offset, const FileSpec *file,
-                               offset_t file_offset, offset_t length) {
+                               lldb::offset_t data_offset, const FileSpec *file,
+                               lldb::offset_t file_offset, lldb::offset_t length) {
   Log *log = GetLog(LLDBLog::Object);
 
   if (!data_sp) {
@@ -217,8 +217,8 @@ bool ObjectFileWasm::DecodeSections() {
 }
 
 size_t ObjectFileWasm::GetModuleSpecifications(
-    const FileSpec &file, DataBufferSP &data_sp, offset_t data_offset,
-    offset_t file_offset, offset_t length, ModuleSpecList &specs) {
+    const FileSpec &file, DataBufferSP &data_sp, lldb::offset_t data_offset,
+    lldb::offset_t file_offset, lldb::offset_t length, ModuleSpecList &specs) {
   if (!ValidateModuleHeader(data_sp)) {
     return 0;
   }
@@ -229,8 +229,8 @@ size_t ObjectFileWasm::GetModuleSpecifications(
 }
 
 ObjectFileWasm::ObjectFileWasm(const ModuleSP &module_sp, DataBufferSP data_sp,
-                               offset_t data_offset, const FileSpec *file,
-                               offset_t offset, offset_t length)
+                               lldb::offset_t data_offset, const FileSpec *file,
+                               lldb::offset_t offset, lldb::offset_t length)
     : ObjectFile(module_sp, file, offset, length, data_sp, data_offset),
       m_arch("wasm32-unknown-unknown-wasm") {
   m_data.SetAddressByteSize(4);
@@ -300,7 +300,7 @@ void ObjectFileWasm::CreateSections(SectionList &unified_section_list) {
   for (const section_info &sect_info : m_sect_infos) {
     SectionType section_type = eSectionTypeOther;
     ConstString section_name;
-    offset_t file_offset = sect_info.offset & 0xffffffff;
+    lldb::offset_t file_offset = sect_info.offset & 0xffffffff;
     addr_t vm_addr = file_offset;
     size_t vm_size = sect_info.size;
 
@@ -387,7 +387,7 @@ bool ObjectFileWasm::SetLoadAddress(Target &target, lldb::addr_t load_address,
   return num_loaded_sections > 0;
 }
 
-DataExtractor ObjectFileWasm::ReadImageData(offset_t offset, uint32_t size) {
+DataExtractor ObjectFileWasm::ReadImageData(lldb::offset_t offset, uint32_t size) {
   DataExtractor data;
   if (m_file) {
     if (offset < GetByteSize()) {

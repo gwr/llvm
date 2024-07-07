@@ -44,7 +44,7 @@ SymbolVendor *SymbolVendor::FindPlugin(const lldb::ModuleSP &module_sp,
   FileSpec sym_spec = module_sp->GetSymbolFileFileSpec();
   if (sym_spec && sym_spec != module_sp->GetObjectFile()->GetFileSpec()) {
     DataBufferSP data_sp;
-    offset_t data_offset = 0;
+    lldb::offset_t data_offset = 0;
     sym_objfile_sp = ObjectFile::FindPlugin(
         module_sp, &sym_spec, 0, FileSystem::Instance().GetByteSize(sym_spec),
         data_sp, data_offset);
